@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Vintage New Year</title>
+    <style>
+        :root {
+            --bg-paper: #fdfcf0;
+            --bg-aged: #e0d7bc;
+            --ink: #3b2f2f;
+            --wood: #8b4513;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, var(--bg-paper) 0%, var(--bg-aged) 100%);
+            font-family: 'Special Elite', cursive;
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .container { width: 100%; max-width: 500px; text-align: center; padding: 20px; }
+
+        /* --- 1. COUNTDOWN --- */
+        #countdown-screen { font-size: 8rem; font-weight: bold; }
+
+        /* --- 2. MOVING PENGUINS --- */
+        #penguin-screen { display: none; }
+        .ice-rink { position: relative; height: 150px; width: 100%; display: flex; justify-content: space-around; align-items: center; margin-bottom: 20px; }
+        .penguin { font-size: 5rem; transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: absolute; cursor: pointer; }
+        .p1 { left: 0; }
+        .p2 { right: 0; }
+        .kiss .p1 { left: calc(50% - 60px); }
+        .kiss .p2 { right: calc(50% - 60px); }
+        .heart-pop { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 2rem; opacity: 0; transition: 0.5s; }
+        .kiss .heart-pop { opacity: 1; top: -30px; }
+
+        /* --- 3. VINTAGE BOX --- */
+        #box-screen { display: none; perspective: 1000px; }
+        .box-wrapper { position: relative; width: 220px; height: 160px; margin: 0 auto; cursor: pointer; }
+        .box-lid { 
+            width: 100%; height: 40px; background: #5d2e0a; border: 3px solid #3d1e07;
+            border-radius: 10px 10px 0 0; position: absolute; top: 0; z-index: 3;
+            transition: transform 0.8s ease-in-out; transform-origin: top;
+        }
+        .box-body { 
+            width: 100%; height: 120px; background: var(--wood); border: 3px solid #5d2e0a; 
+            border-radius: 0 0 10px 10px; position: absolute; bottom: 0; z-index: 1;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .lock-icon { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); z-index: 4; font-size: 2rem; transition: 0.3s; }
+
+        /* --- 4. THE LETTER POP-UP --- */
+        .letter-content {
+            position: absolute; bottom: 20px; left: 10px; right: 10px;
+            background: #fff; padding: 20px; min-height: 250px;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 2;
+            transform: translateY(100%); transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Playfair Display', serif; text-align: left; line-height: 1.6;
+            border: 1px solid #ddd;
+        }
+        /* Open State */
+        .box-open .box-lid { transform: rotateX(110deg); }
+        .box-open .letter-content { transform: translateY(-110%); }
+        .box-open .lock-icon { opacity: 0; }
+
+        .new-year-title { font-family: 'Playfair Display', serif; font-size: 2.5rem; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="countdown-screen">5</div>
+
+        <div id="penguin-screen">
+            <div class="ice-rink" id="rink">
+                <div class="heart-pop">💖</div>
+                <div class="penguin p1">🐧</div>
+                <div class="penguin p2">🐧</div>
+            </div>
+            <div class="new-year-title">Happy New Year!</div>
+            <p style="margin-top: 20px;">Click the penguins to move...</p>
+        </div>
+
+        <div id="box-screen">
+            <h2 style="margin-bottom: 40px;">Tap to unlock memories</h2>
+            <div class="box-wrapper" id="vintage-box">
+                <div class="lock-icon" id="lock-icon">🔒</div>
+                <div class="box-lid"></div>
+                
+                <div class="letter-content" id="letter-content">
+                    <h3 style="text-align: center; margin-bottom: 10px;">My Dearest Izma,</h3>
+                    <p>Happy New Year! I wanted to start this year by telling you how much you mean to me...</p>
+                    <p style="margin-top: 15px;">You can add all your beautiful words right here.</p>
+                    <p style="margin-top: 40px; text-align: right;">Forever yours, <br><b>Araib</b></p>
+                </div>
+
+                <div class="box-body"></div>
+            </div>
+            <p style="margin-top: 30px; opacity: 0.6;">Taps: <span id="tap-count">0</span>/10</p>
+        </div>
+    </div>
+
+    <script>
+        const screens = {
+            count: document.getElementById('countdown-screen'),
+            penguin: document.getElementById('penguin-screen'),
+            box: document.getElementById('box-screen')
+        };
+
+        // 1. Countdown Logic
+        let timer = 5;
+        const countInt = setInterval(() => {
+            timer--;
+            if(timer > 0) {
+                screens.count.textContent = timer;
+            } else {
+                clearInterval(countInt);
+                screens.count.style.display = 'none';
+                screens.penguin.style.display = 'block';
+            }
+        }, 1000);
+
+        // 2. Penguin Animation Logic
+        const rink = document.getElementById('rink');
+        rink.onclick = () => {
+            rink.classList.add('kiss');
+            setTimeout(() => {
+                screens.penguin.style.opacity = '0';
+                screens.penguin.style.transition = '1s';
+                setTimeout(() => {
+                    screens.penguin.style.display = 'none';
+                    screens.box.style.display = 'block';
+                }, 1000);
+            }, 2000);
+        };
+
+        // 3. Box Tapping Logic
+        let taps = 0;
+        const boxWrapper = document.getElementById('vintage-box');
+        const lockIcon = document.getElementById('lock-icon');
+        const tapDisplay = document.getElementById('tap-count');
+
+        boxWrapper.onclick = () => {
+            taps++;
+            if (taps <= 10) {
+                tapDisplay.textContent = taps;
+                // Shake effect
+                boxWrapper.style.transform = `translateX(${taps % 2 === 0 ? '5px' : '-5px'})`;
+                setTimeout(() => boxWrapper.style.transform = 'translateX(0)', 50);
+            }
+
+            if (taps === 5) {
+                lockIcon.textContent = "🔓";
+            }
+
+            if (taps === 10) {
+                boxWrapper.classList.add('box-open');
+                // Prevent further taps from messing up the animation
+                boxWrapper.onclick = null;
+            }
+        };
+    </script>
+</body>
+</html>
+  
