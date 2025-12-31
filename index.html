@@ -58,15 +58,22 @@
         /* --- 4. THE LETTER POP-UP --- */
         .letter-content {
             position: absolute; bottom: 20px; left: 10px; right: 10px;
-            background: #fff; padding: 20px; min-height: 250px;
+            background: #fff; padding: 10px;
             box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 2;
-            transform: translateY(100%); transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(100%);
+            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: 'Playfair Display', serif; text-align: left; line-height: 1.6;
             border: 1px solid #ddd;
         }
+        .letter-content div {
+            max-height: 250px; 
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
         /* Open State */
         .box-open .box-lid { transform: rotateX(110deg); }
-        .box-open .letter-content { transform: translateY(-110%); }
+        .box-open .letter-content { transform: translateY(-100%); }
         .box-open .lock-icon { opacity: 0; }
 
         .new-year-title { font-family: 'Playfair Display', serif; font-size: 2.5rem; }
@@ -92,22 +99,24 @@
             <div class="box-wrapper" id="vintage-box">
                 <div class="lock-icon" id="lock-icon">🔒</div>
                 <div class="box-lid"></div>
-                
+
                 <div class="letter-content" id="letter-content">
-                    <h3 style="text-align: center; margin-bottom: 10px;">Hi honey,</h3>
-                    <p>Happy New Year to you.<br>
-                    I hope this year brings you endless happiness, good health, and everything your heart quietly wishes for. I know the list is pretty big—and I also know not everything we plan actually happens—but I still hope you get what you’re dreaming of, and maybe even a little more.</p>
-                    <p>I hope this year never puts tears in your eyes. Not even once. I just want to see all your dreams come true.</p>
-                    <p>I wasn’t really planning to write anything… but you know me. That urge in me never listens.<br>
-                    And honestly, the best thing that happened to me this year was you. I give you full credit for that. You walked into my life so unexpectedly, and somehow became someone I love this deeply. I never imagined that someday we’d be this close—but here we are.</p>
-                    <p>There are so many things I want to tell you. Things I can’t say out loud. But you know me—you know my nature, my silences, my pauses.<br>
-                    Meet me soon… before my fingers or my lips forget how you feel in real life.</p>
-                    <p>And as much as I love you—<br>
-                    you also make my blood boil 😒<br>
-                    It’s like you’re constantly testing my last bit of restraint.</p>
-                    <p>I really wish you were here tonight. I would’ve kissed you right when the clock struck twelve—ending my year beautifully and starting a new one even better.</p>
-                    <p>I hope next year, too, I get to write you another letter like this.</p>
-                    <p style="margin-top: 20px; text-align: right;">With all my love,<br><b>Umme Kulsum</b></p>
+                    <div>
+                        <h3 style="text-align: center; margin-bottom: 10px;">Hi honey,</h3>
+                        <p>Happy New Year to you.<br>
+                        I hope this year brings you endless happiness, good health, and everything your heart quietly wishes for. I know the list is pretty big—and I also know not everything we plan actually happens—but I still hope you get what you’re dreaming of, and maybe even a little more.</p>
+                        <p>I hope this year never puts tears in your eyes. Not even once. I just want to see all your dreams come true.</p>
+                        <p>I wasn’t really planning to write anything… but you know me. That urge in me never listens.<br>
+                        And honestly, the best thing that happened to me this year was you. I give you full credit for that. You walked into my life so unexpectedly, and somehow became someone I love this deeply. I never imagined that someday we’d be this close—but here we are.</p>
+                        <p>There are so many things I want to tell you. Things I can’t say out loud. But you know me—you know my nature, my silences, my pauses.<br>
+                        Meet me soon… before my fingers or my lips forget how you feel in real life.</p>
+                        <p>And as much as I love you—<br>
+                        you also make my blood boil 😒<br>
+                        It’s like you’re constantly testing my last bit of restraint.</p>
+                        <p>I really wish you were here tonight. I would’ve kissed you right when the clock struck twelve—ending my year beautifully and starting a new one even better.</p>
+                        <p>I hope next year, too, I get to write you another letter like this.</p>
+                        <p style="margin-top: 20px; text-align: right;">With all my love,<br><b>Umme Kulsum</b></p>
+                    </div>
                 </div>
 
                 <div class="box-body"></div>
@@ -123,7 +132,7 @@
             box: document.getElementById('box-screen')
         };
 
-        // 1. Countdown Logic
+        // Countdown
         let timer = 5;
         const countInt = setInterval(() => {
             timer--;
@@ -136,7 +145,7 @@
             }
         }, 1000);
 
-        // 2. Penguin Animation Logic
+        // Penguin animation
         const rink = document.getElementById('rink');
         rink.onclick = () => {
             rink.classList.add('kiss');
@@ -150,7 +159,7 @@
             }, 2000);
         };
 
-        // 3. Box Tapping Logic
+        // Box tapping logic
         let taps = 0;
         const boxWrapper = document.getElementById('vintage-box');
         const lockIcon = document.getElementById('lock-icon');
@@ -160,20 +169,11 @@
             taps++;
             if (taps <= 10) {
                 tapDisplay.textContent = taps;
-                // Shake effect
                 boxWrapper.style.transform = `translateX(${taps % 2 === 0 ? '5px' : '-5px'})`;
                 setTimeout(() => boxWrapper.style.transform = 'translateX(0)', 50);
             }
-
-            if (taps === 5) {
-                lockIcon.textContent = "🔓";
-            }
-
-            if (taps === 10) {
-                boxWrapper.classList.add('box-open');
-                // Prevent further taps from messing up the animation
-                boxWrapper.onclick = null;
-            }
+            if (taps === 5) lockIcon.textContent = "🔓";
+            if (taps === 10) boxWrapper.classList.add('box-open');
         };
     </script>
 </body>
